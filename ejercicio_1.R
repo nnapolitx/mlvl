@@ -28,7 +28,7 @@ mod1 <- '
 fit1 <- cfa(mod1, std.lv=T, estimator = "MLR", meanstructure = T, data = base)
 summary(fit1, fit.measures = T, standardized = T, rsquare = T)
 
-# pregunta sobre los indicadores de ajuste; esto es resultado de tener un 
+# pregunta sobre los indicadores de ajuste; este es resultado de tener un 
 # modelo identificado, o "just-identified model"? No se si hice esta parte bien
 
 configural <- '
