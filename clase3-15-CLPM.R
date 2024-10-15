@@ -1,22 +1,22 @@
 setwd("C:/Users/nnapo/Documents/PhD Classes/optativo MLVL/clases/data")
+library(psych)
+library(MVN)
+library(lavaan)
+library(dplyr)
 
 base<- read.csv("rezagos.csv", header = T, sep = ";", na= 99)
 names(base)
 str(base)
-
-library(psych)
 describe(base)
-library(MVN)
-library(lavaan)
 
 ###### Modelo autorregresivo clásico sin restricciones
-mod1<- '# Regresiones para restricción verbal PADRE
+mod1<- '# Regresiones para restricción verbal PADRE (Dad)
         T2DVC ~ T1MVC  # Efecto cruzado
         T2DVC ~ T1DVC  # Efecto autorregresivo
         T3DVC ~ T2MVC  # Efecto cruzado
         T3DVC ~ T2DVC  # Efecto autorregresivo
         
-        # Regresiones para restricción verbal MADRE
+        # Regresiones para restricción verbal MADRE (Mom)
         T2MVC ~ T1MVC  # Efecto autorregresivo
         T2MVC ~ T1DVC  # Efecto cruzado
         T3MVC ~ T2MVC  # Efecto autorregresivo
@@ -52,6 +52,9 @@ mod2<- '# Regresiones para restricción verbal PADRE
         '
 CLPM_R <- sem(mod2, data = base, mimic = "mplus")
 summary(CLPM_R, fit.measures = TRUE, standardized = T)
+
+anova(CLPM,CLPM_R)
+# new model is more parsimonious. look at diff in chi2 as well as pvalue of diff.
 
 ####################################
 

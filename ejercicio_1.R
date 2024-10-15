@@ -22,7 +22,6 @@ mvn(base[3:17])
 # especificacion del modelo
 mod1 <- '
   perf1 =~ psp1.T1 + psp2.T1 + psp3.T1
-  perf1 ~~ 1*perf1
 '
 
 fit1 <- cfa(mod1, std.lv=T, estimator = "MLR", meanstructure = T, data = base)
@@ -160,9 +159,9 @@ summary(fit_metric, fit.measures = TRUE, standardized = T, rsquare = T)
 # 0.87; indicando un buen ajuste al modelo.
 
 scalar <- '
-  perf1 =~ l1*psp1.T1 + l2*psp2.T1 + l3*psp3.T1
-  perf3 =~ l1*psp1.T3 + l2*psp2.T3 + l3*psp3.T3
-  perf5 =~ l1*psp1.T5 + l2*psp2.T5 + l3*psp3.T5
+  perf1 =~ NA*psp1.T1 + l1*psp1.T1 + l2*psp2.T1 + l3*psp3.T1
+  perf3 =~ NA*psp1.T3 + l1*psp1.T3 + l2*psp2.T3 + l3*psp3.T3
+  perf5 =~ NA*psp1.T5 + l1*psp1.T5 + l2*psp2.T5 + l3*psp3.T5
   
 # interceptos libremente estimados
   psp1.T1 ~ i1*1
@@ -188,8 +187,8 @@ scalar <- '
  
 # Varianza de los factores fijos en 1 (identificación)
   perf1 ~~ 1*perf1
-  perf3 ~~ 1*perf3
-  perf5 ~~ 1*perf5
+  perf3 ~~ perf3
+  perf5 ~~ perf5
  
 # Medias de los factores fijos en 0 (identificación)
   perf1 ~ 0*1
@@ -213,7 +212,7 @@ scalar <- '
   perf1 ~~ perf5
 '
 
-fit_scalar <- cfa(scalar, data = base, std.lv=T,estimator = "MLR", 
+fit_scalar <- cfa(scalar, data = base, estimator = "MLR", 
                   mimic = "mplus")
 summary(fit_scalar, fit.measures = TRUE, standardized = T)
 
