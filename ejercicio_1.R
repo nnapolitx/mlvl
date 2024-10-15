@@ -4,7 +4,7 @@ library(psych)
 library(dplyr)
 setwd("C:/Users/nnapo/Documents/PhD Classes/optativo MLVL/clases/data")
 
-base<- read.csv("ejercicio1.csv", header = T, sep = ";", na=-9)
+base <- read.csv("ejercicio1.csv", header = T, sep = ";", na=-9)
 names(base)
 
 str(base)
@@ -17,7 +17,7 @@ str(base)
 describe(base[3:17], skew =F)
 
 mvn(base[3:17])
-# no hay normalidad
+# no hay normalidad -> use MLR
 
 # especificacion del modelo
 mod1 <- '
@@ -96,9 +96,9 @@ summary(fit_configural, fit.measures = TRUE, standardized = T)
 # 0.88; indicando un buen ajuste al modelo.
 
 metric <- '
-  perf1 =~ l1*psp1.T1 + l2*psp2.T1 + l3*psp3.T1
-  perf3 =~ l1*psp1.T3 + l2*psp2.T3 + l3*psp3.T3
-  perf5 =~ l1*psp1.T5 + l2*psp2.T5 + l3*psp3.T5
+  perf1 =~ NA*psp1.T1 + l1*psp1.T1 + l2*psp2.T1 + l3*psp3.T1
+  perf3 =~ NA*psp1.T3 + l1*psp1.T3 + l2*psp2.T3 + l3*psp3.T3
+  perf5 =~ NA*psp1.T5 + l1*psp1.T5 + l2*psp2.T5 + l3*psp3.T5
   
 # interceptos libremente estimados
   psp1.T1 ~ 1
@@ -124,8 +124,8 @@ metric <- '
  
 # Varianza de los factores fijos en 1 (identificación)
   perf1 ~~ 1*perf1
-  perf3 ~~ 1*perf3
-  perf5 ~~ 1*perf5
+  perf3 ~~ perf3
+  perf5 ~~ perf5
  
 # Medias de los factores fijos en 0 (identificación)
   perf1 ~ 0*1
@@ -149,9 +149,9 @@ metric <- '
   perf1 ~~ perf5
 '
 
-fit_metric <- cfa(metric, data = base, std.lv=T,estimator = "MLR", 
+fit_metric <- cfa(metric, data = base, estimator = "MLR", 
                   mimic = "mplus")
-summary(fit_metric, fit.measures = TRUE, standardized = T)
+summary(fit_metric, fit.measures = TRUE, standardized = T, rsquare = T)
 
 # resultados del modelo metric (debil): el chi2 acepta la Ho, y CFI y TLI indican 
 # buen ajuste. RMSEA tiene buen ajuste, y el intervalo de confianza superior
