@@ -7,6 +7,8 @@ library(psych)
 library(MVN)
 library(dplyr)
 
+describe(base)
+
 mod0 <- '
   ####################
   # Modelo de medida #
@@ -47,7 +49,7 @@ mod0 <- '
   # WITHIN PART: dinámico #
   #########################
   
-  # Especificación de los efectos autorregresivos
+  # Especificación de los efectos autorregresivos y cruzados
   WFX2 + WFY2 ~ WFX1 + WFY1
   WFX3 + WFY3 ~ WFX2 + WFY2
   WFX4 + WFY4 ~ WFX3 + WFY3
@@ -55,7 +57,7 @@ mod0 <- '
   # Correlación entre olas
   WFX1 ~~ WFY1
   WFX2 ~~ WFY2
-  WFX3 ~~ WFY3 
+  WFX3 ~~ WFY3
   WFX4 ~~ WFY4
   
   #############################
