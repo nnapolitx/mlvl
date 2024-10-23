@@ -1,3 +1,4 @@
+# ---- Setear el directorio del trabajo y cargar el base y las librerias----
 setwd("C:/Users/nnapo/Documents/PhD Classes/optativo MLVL/exercises/data")
 
 library(lavaan)
@@ -10,6 +11,7 @@ names(base)
 describe(base)
 # No hay datos perdidos.
 
+# ---- identificar el modelo de medicion----
 mvn(base)
 # no hay normalidad multivariada, tampoco univariada en ninguna variable. Hay
 # que estimar con MLR.
