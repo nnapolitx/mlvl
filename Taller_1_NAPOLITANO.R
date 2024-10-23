@@ -349,4 +349,16 @@ anova(fit_config_grupo, fit_debil_grupo, fit_fuerte_grupo, fit_estricta_grupo)
 # el tiempo. Esto sugiere que la escala mide ansiedad igualmente entre hombres 
 # y mujeres a lo largo del tiempo.
 
-# 
+# ---- Analiza si hay diferencias signif en los niveles de ansiedad entre grupos ----
+
+
+fit_ans_sexo <- sem(mod0, data = base, group = "sexo", 
+                        group.equal = c("loadings", "intercepts"), 
+                        group.partial = "ansT2~1", estimator = "MLR")
+
+summary(fit_ans_sexo, standardized = T, fit.measures = TRUE)
+
+# Resultados: Para el grupo de mujeres, los interceptos de las VL no son 
+# significativos, lo cual significa que no se diferencian de cero. Esto quiere
+# decir que son estadisticamente iguales los niveles de ansiedad entre hombre y
+# mujer.
