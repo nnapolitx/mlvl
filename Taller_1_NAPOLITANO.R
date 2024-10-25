@@ -12,8 +12,8 @@ describe(base)
 # No hay datos perdidos.
 
 # ---- identificar el modelo de medicion----
-mvn(base)
-# no hay normalidad multivariada, tampoco univariada en ninguna variable. Hay
+mvn(base [2:11])
+# Hay norm multivariada, per no univariada en ninguna variable. Hay
 # que estimar con MLR.
 
 # modelo medicion
@@ -30,11 +30,6 @@ summary(fit0, fit.measures =T, standardized = T, rsquare = T)
 # SRMR = 0.029). Todas las cargas factoriales son significativas y altas (.58 o
 # mayor). No hay covarianza significativa entre T1 y T2. Finalmente, hay bastante
 # varianza de las VL exmplicada por los factores (minimo 0.346).
-
-# Evaluacion de modelo para invarianza entre las mediciones (T1 y T2). Si hay 
-# invarianza, significaria que las mediciones son factorialmente invariantes. 
-# Esto podria significar que las mediciones de ansiedad no varian en el tiempo;
-# que es un rasgo mas estable en el tiempo???.
 
 # ---- prueba de invarianza en el tiempo ----
 
@@ -320,12 +315,17 @@ anova(fit_config,fit_debil_mod)
 
 # ----Invarianza por grupo (sexo)----
 
+# Para pregunta numero tres: 3. Evalúe si el modelo es invariante entre hombres 
+# y mujeres. Reporte e interprete sus resultados. 
+
 str(base)
 # 1 = H, 2 = M
 
 # Factor - R lee 1/2 como var categorica
 base$sexo<- as.factor(base$sexo)
 str(base$sexo)
+
+describe(base)
 
 # usando el modelo configural y MLR (ya sabemos no hay norm. MV)
 fit_config_grupo <-  sem(configural, data=base, estimator = "MLR", group="sexo")
@@ -334,15 +334,18 @@ summary(fit_config_grupo, fit.measures = T, standardized = T, rsquare = T)
 # Invarianza fuerte (cargas fact iguales)
 fit_debil_grupo <- sem(configural, data=base, std.lv=T, estimator = "MLR",
                        group="sexo", group.equal="loadings")
+summary(fit_debil_grupo, fit.measures = T, standardized = T, rsquare = T)
 
 # Invarianza fuerte (interceptos iguales)
 fit_fuerte_grupo <- sem(configural, data=base, std.lv=T, estimator = "MLR", 
                        group="sexo", group.equal=c("loadings", "intercepts"))
+summary(fit_fuerte_grupo, fit.measures = T, standardized = T, rsquare = T)
 
 # Invarianza estricta (residuos iguales)
 fit_estricta_grupo <- sem(configural, data=base, std.lv=T, estimator = "MLR", 
                           group="sexo", group.equal=c("loadings", "intercepts", 
                                                       "residuals"))
+summary(fit_estricta_grupo, fit.measures = T, standardized = T, rsquare = T)
 
 # Comparación de ajuste de los modelos (chi2)
 anova(fit_config_grupo, fit_debil_grupo, fit_fuerte_grupo, fit_estricta_grupo)
@@ -352,6 +355,14 @@ anova(fit_config_grupo, fit_debil_grupo, fit_fuerte_grupo, fit_estricta_grupo)
 # y mujeres a lo largo del tiempo.
 
 # ---- Analiza si hay diferencias signif en los niveles de ansiedad entre grupos ----
+# Para pregunta numero 4: 4. Analiza si hay diferencias significa vas en los 
+# niveles de ansiedad entre hombres y mujeres. 
+
+fit_var_cov_grupo <- sem(configural, data=base, std.lv=T, estimator = "ML", 
+                          group="sexo", group.equal=c("loadings", "intercepts", 
+                                                      "residuals", "lv.variances", 
+                                                      "lv.covariances"))
+summary(fit_var_cov_grupo, fit.measures = T, standardized = T, rsquare = T)
 
 
 fit_ans_sexo <- sem(mod0, data = base, group = "sexo", 
@@ -364,3 +375,5 @@ summary(fit_ans_sexo, standardized = T, fit.measures = TRUE)
 # significativos, lo cual significa que no se diferencian de cero. Esto quiere
 # decir que son estadisticamente iguales los niveles de ansiedad entre hombre y
 # mujer.
+
+
