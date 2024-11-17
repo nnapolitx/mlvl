@@ -21,10 +21,7 @@ mvn(base[3:6],univariateTest = "SW", desc =F)
 # No haay normalidad multivariada, indica que la var no se distr normalmente en
 # la pop. Hay que usar 'MLR'.
 
-mvn(base[3:6], mvnTest = "mardia", multivariatePlot = "qq",
-    multivariateOutlierMethod = "quan", desc =F)
-
-# Modelo de intercepto aleatorio
+# Modelo nulo
 modeloi <-"
   i =~ 1*consumo1 + 1*consumo2 + 1*consumo3 + 1*consumo4
 "
@@ -42,22 +39,53 @@ summary(fitl, fit.measures = TRUE, standardized=TRUE)
 
 modeloq <- "
   i=~ 1*consumo1 + 1*consumo2 + 1*consumo3 + 1*consumo4
-  s=~ 1*consumo1 + 2*consumo2 + 3*consumo3 + 4*consumo4
+  s=~ 0*consumo1 + 1*consumo2 + 2*consumo3 + 3*consumo4
   q=~ 0*consumo1 + 1*consumo2 + 4*consumo3 + 9*consumo4
 "
 fitq <-growth(modeloq,data=base, missing="fiml", se="robust",estimator="mlr")
 summary(fitq, fit.measures = TRUE, standardized=TRUE)
 
+anova(fiti, fitl, fitq)
+# Se selecciona modelo q
+
 # Estimacion del modelo que incorpora el monitoreo parental 
 modelop <- "
   i=~ 1*consumo1 + 1*consumo2 + 1*consumo3 + 1*consumo4
-  s=~ 1*consumo1 + 2*consumo2 + 3*consumo3 + 4*consumo4
+  s=~ 0*consumo1 + 1*consumo2 + 2*consumo3 + 3*consumo4
   q=~ 0*consumo1 + 1*consumo2 + 4*consumo3 + 9*consumo4
   
   i ~ monitoreo
   s ~ monitoreo
   q ~ monitoreo
 "
-fitp <-growth(modelop,data=base, missing="fiml", se="robust",estimator="mlr")
+fitp <-growth(modelop,data=base, missing="ml", se="robust",estimator="mlr")
 summary(fitp, fit.measures = TRUE, standardized=TRUE)
 
+# Estimación del modelo invariante entre hombres y mujeres
+fitm <- growth(modeloq,data=base, missing="ml", se="robust",estimator="mlr", 
+               group = "sexo")
+summary(fitm, fit.measures = TRUE, standardized=TRUE)
+
+# varianzas negativa en consumo1, se retringe la varianza a zero en consumo1
+modelom <- "
+  i=~ 1*consumo1 + 1*consumo2 + 1*consumo3 + 1*consumo4
+  s=~ 0*consumo1 + 1*consumo2 + 2*consumo3 + 3*consumo4
+  q=~ 0*consumo1 + 1*consumo2 + 4*consumo3 + 9*consumo4
+  consumo1 ~~ 0*consumo1
+  "
+fitm2 <- growth(modelom,data=base, missing="ml", se="robust",estimator="mlr", 
+               group = "sexo")
+summary(fitm2, fit.measures = TRUE, standardized=TRUE)
+# El modelo configural tiene un ajuste bien
+
+fitm3 <- growth(modelom,data=base,missing="ml",se="robust",
+                estimator="mlr", group = "sexo", group.equal="means")
+summary(fitm3, fit.measures = TRUE, standardized=TRUE)
+
+fitm4<-growth(modelom,data=base,missing="ml",se="robust",
+              estimator="mlr", group = "sexo", group.equal="means",
+              group.partial= c("i~1", "q~1"))
+summary(fitm4, fit.measures = TRUE, standardized=TRUE)
+
+anova(fitm2, fitm3, fitm4)
+lavTestLRT(fitm2, fitm3, fitm4)
